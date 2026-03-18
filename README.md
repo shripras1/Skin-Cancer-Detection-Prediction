@@ -30,10 +30,10 @@ modality configurations: tabular only, image only, and combined tabular + image.
 ## Dataset and Setup Instructions <br>
 
 ### Where and How to Download
-The data can be found at Kaggle: [Skin Cancer Detection](https://www.kaggle.com/competitions/isic-2024-challenge/data)
-Navigate to the competition page: https://www.kaggle.com/competitions/isic-2024-challenge/data 
-Accept the competition rules to gain data access.
-
+The data can be found at Kaggle: [Skin Cancer Detection](https://www.kaggle.com/competitions/isic-2024-challenge/data) <br>
+Navigate to the competition page: https://www.kaggle.com/competitions/isic-2024-challenge/data <br>
+Accept the competition rules to gain data access. <br>
+<br>
 Because of the sheer size of the data, the code notebooks largely used Google Colab, accessing the data om Kaggle using a generated API Token.
 
 ### Setup Intsructions:
