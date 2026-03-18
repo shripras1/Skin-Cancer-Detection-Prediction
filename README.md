@@ -37,27 +37,27 @@ Accept the competition rules to gain data access.
 Because of the sheer size of the data, the code notebooks largely used Google Colab, accessing the data om Kaggle using a generated API Token.
 
 ### Setup Intsructions:
-### Option A — Google Colab + Kaggle (Recommended)
+### Option A: Google Colab + Kaggle (Recommended)
 
 All notebooks were developed and tested on Google Colab using Kaggle's dataset API.
 This is the recommended environment.
 
-**Step 1 — Set up Kaggle API credentials**
+**Step 1: Set up Kaggle API credentials**
 1. Go to https://www.kaggle.com/settings → Account → API
 2. Click **"Create New Legacy Key"** — downloads `kaggle.json` to your machine
 3. Store this file on your device as you will upload it when prompted by the notebook
 
-**Step 2 — Enable GPU (required for CNN notebooks)**
+**Step 2: Enable GPU (required for CNN notebooks)**
 1. In Colab: **Runtime → Change runtime type → T4 GPU**
 2. Click Save
 
-**Step 3 — Run the notebook**
+**Step 3: Run the notebook**
 1. Open the desired notebook in Colab
 2. Run the first setup cell — upload your `kaggle.json` when prompted
 3. The notebook will automatically download and extract the dataset (~50GB)
 4. Run all remaining cells in order from top to bottom
 
-### Option B — Local Setup
+### Option B: Local Setup
 
 **System requirements**
 - Python 3.9+
@@ -85,9 +85,9 @@ unzip isic-2024-challenge.zip
 ```
 
 The following files will be downloaded on google colab or your local system:
-   - `train-metadata.csv` — clinical metadata for all training lesions (55 features)
-   - `train-image/image/` — folder of JPEG lesion images named by `isic_id`
-   - `test-metadata.csv` — test set metadata (no labels, not used in this project)
+   - `train-metadata.csv` - clinical metadata for all training lesions (55 features)
+   - `train-image/image/` - folder of JPEG lesion images named by `isic_id`
+   - `test-metadata.csv` - test set metadata (no labels, not used in this project)
 
 
 ### Dataset Structure
