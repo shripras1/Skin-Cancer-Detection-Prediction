@@ -144,9 +144,58 @@ Contains EDA and three modeling approaches. **GPU required for CNN sections.**
 
 ---
 
-### Ana's Notebook — `[filename].ipynb`
-*[Fill in: brief description of models covered, e.g. Logistic Regression tabular,
-Logistic Regression with EfficientNet-embedded features, Stacked XGBoost]*
+### Ana's Notebook — `isic2024_logreg_LSTM.ipynb`
+Contains logistic regression with odds ratio analysis and two LSTM architectures.
+
+**Section 1. Imports, Config & Feature Engineering**
+- Full library setup: pandas, numpy, sklearn, PyTorch, torchvision, h5py, scipy
+- 15 TBP measurement columns selected as numeric features
+- 2 demographic features: age_approx, clin_size_long_diam_mm
+- 3 categorical features: sex, anatom_site_general, tbp_tile_type
+- 4 engineered interaction features:
+  - feat_border_x_color (border × colour normalisation)
+  - feat_age_x_size (age × lesion diameter)
+  - feat_asymm_ratio (border irregularity / symmetry)
+  - feat_compact_x_color (area-perimeter ratio × colour normalisation)
+- Total: 24 features (20 numeric + 4 engineered + categorical OHE expansion)
+- Positive class weight computed as n_neg / n_pos ≈ 1,019×
+
+**Section 2. Stratified 5-Fold CV Framework**
+- 80/20 stratified train_test_split on full 401,059-row dataset (held-out 20% = ~80,000 rows)
+- StratifiedKFold(n_splits=5) applied to development set only
+- Four evaluation metrics computed per fold:
+  - AUROC (full curve)
+  - Partial AUROC (specificity ≥ 80% zone, clinically relevant region)
+  - Average Precision (PR-AUC)
+  - Sensitivity at 80% specificity
+- Fold balance verification printed and visualised
+
+**Section 3. Logistic Regression — 5-Fold Stratified CV**
+- Pipeline: median imputer → StandardScaler (numeric) + most-frequent imputer → OneHotEncoder (categorical) → LogisticRegression(C=1.0, solver=lbfgs, class_weight=balanced)
+- Expected Val ROC-AUC: ~0.897 ± 0.010
+- Fold stability: AUC range 0.882–0.909 across all five folds
+- Runtime: ~2–5 minutes (CPU)
+- Outputs: 4-panel diagnostic figure (ROC curves per fold, metric stability chart, hold-out confusion matrix at threshold 0.995, threshold vs sensitivity/specificity/precision/F1 curve)
+
+**Section 4. Odds Ratio Forest Plot**
+- Logistic regression coefficients exponentiated to odds ratios
+- 95% confidence intervals via vectorised bootstrap (200 resamples, n=15,000 subsample) — runs in under 60 seconds
+- Top 25 features plotted on log-scale x-axis with linear OR magnitude bar chart
+- Diamond markers = CI excludes 1.0 (statistically significant); circle = not significant
+- Key findings: tbp_lv_norm_border OR=7,526 (extreme, likely quasi-complete separation), feat_compact_x_color OR=1,159, tbp_lv_area_perim_ratio OR=0.003 (strongly protective), tbp_lv_symm_2axis OR=0.024 (symmetric lesions protective)
+- ABCDE criteria independently recovered: border (B), colour (C), diameter (D), asymmetry (A) all appear in top features
+
+**Section 5. LSTM Models — Tabular and CNN-Image**
+- 80/20 stratified holdout split before any fold training (holdout: 4,000 rows, 4 malignant)
+- Tabular LSTM: 35 features → sequence of length 35 (1 feature per timestep) → 2-layer LSTM (hidden=64, dropout=0.3) → BatchNorm → Dropout(0.3) → Linear(64→1) → sigmoid
+- CNN-Image LSTM: 64×64 RGB image → 64 pixel rows each compressed by 2× Conv1d to 32-dim vector → bidirectional 2-layer LSTM (hidden=128) → BatchNorm → Dropout(0.3) → Linear(256→1) → sigmoid
+- Training: Adam (lr=1e-3, weight_decay=1e-4), 12 epochs, ReduceLROnPlateau (×0.5, patience=2), gradient clipping at norm 1.0
+- Imbalance: WeightedRandomSampler with pos_weight ≈ 1,019, BCELoss; image branch adds H/V flip and colour jitter augmentation
+- Threshold: Youden's J statistic on OOF predictions (not 0.5); also evaluated at clinical threshold 0.30
+- Expected Tabular LSTM Val ROC-AUC: ~0.666 ± 0.042; Image LSTM: ~0.803 ± 0.070
+- Hold-out Tabular LSTM ROC-AUC: 0.661, PR-AUC: 0.005; Image LSTM ROC-AUC: 0.814, PR-AUC: 0.061
+- Runtime: ~10–20 minutes (GPU T4)
+- Outputs: per-fold AUC tables, overfitting diagnostic (train vs val AUC per epoch), threshold optimisation printout, 4-threshold confusion matrices with clinical interpretation, classification reports
 
 ---
 
